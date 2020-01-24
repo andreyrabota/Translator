@@ -1,6 +1,6 @@
 import tkinter
 datadict = {'Wolf': 'Волк', 'Bear': 'Медведь', 'Snowman': 'Снеговик', 'Cop': 'Полицейский', 'Cat': 'Кошка'}
-
+###
 def random_key(datadict):
     import random
     return random.choice(list(datadict.keys()))
