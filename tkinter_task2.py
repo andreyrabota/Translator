@@ -1,5 +1,24 @@
 import tkinter
-datadict = {'Wolf': 'Волк', 'Bear': 'Медведь', 'Snowman': 'Снеговик', 'Cop': 'Полицейский', 'Cat': 'Кошка'}
+import csv
+class CsvDict:
+    def read(self):
+        with open('data_en2ru.csv') as file:
+            datadict = {}
+            reader = csv.reader(file)
+            for row in reader:
+                k, v = row
+                datadict[k] = v
+            return datadict
+
+    def addi(self):
+        with open('data_en2ru.csv', 'a', newline='') as file:
+            writer = csv.writer(file)
+            a,b = input().split(' ')
+            writer.writerow([a,b])
+
+raw_data = CsvDict()
+datadict = raw_data.read()
+# {'Wolf': 'Волк', 'Bear': 'Медведь', 'Snowman': 'Снеговик', 'Cop': 'Полицейский', 'Cat': 'Кошка'}
 ###
 def random_key(datadict):
     import random
@@ -14,6 +33,18 @@ def click_button_check():
         rand_slovo.set(random_key(datadict))
     else:
         data.set('nepravilno, poprobyite eshe raz')
+
+def admin_btn_click():
+    admin_window()
+
+def admin_window():
+    window2  = tkinter.Toplevel(main_window)
+    frame2 = tkinter.Frame(window2)
+    st_label2 = tkinter.Label(frame2, text='vvedite slovo i perevod')
+    button_exit2 = tkinter.Button(frame2, text='Exit', command=quit)
+    st_label2.pack()
+    frame2.pack()
+    button_exit2.pack()
 
 def quit():
     from sys import exit
@@ -31,6 +62,7 @@ pole_vvoda = tkinter.Entry(frame)
 
 otvet = tkinter.Label(frame, textvariable = data)
 button_check = tkinter.Button(frame, text = 'proverit', command = click_button_check)
+admin_btn = tkinter.Button(frame, text = 'adminka', command = admin_btn_click)
 button_exit = tkinter.Button(frame, text = 'Exit', command = quit)
 
 frame.pack()
@@ -39,5 +71,6 @@ st_label.pack()
 pole_vvoda.pack()
 otvet.pack()
 button_check.pack()
+admin_btn.pack()
 button_exit.pack()
 main_window.mainloop()
