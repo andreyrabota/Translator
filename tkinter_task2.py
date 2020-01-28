@@ -1,5 +1,7 @@
 import tkinter
 import csv
+
+
 class CsvDict:
     def read(self):
         with open('data_en2ru.csv') as file:
@@ -10,11 +12,13 @@ class CsvDict:
                 datadict[k] = v
             return datadict
 
-    def addi(self):
+    def addi(self, slovo, perevod):
         with open('data_en2ru.csv', 'a', newline='') as file:
             writer = csv.writer(file)
-            a,b = input().split(' ')
-            writer.writerow([a,b])
+            try:
+                writer.writerow([slovo, perevod])
+            except ValueError:
+                print('Vi ne ykazali dannie')
 
 raw_data = CsvDict()
 datadict = raw_data.read()
@@ -37,14 +41,32 @@ def click_button_check():
 def admin_btn_click():
     admin_window()
 
+
+
 def admin_window():
+
     window2  = tkinter.Toplevel(main_window)
     frame2 = tkinter.Frame(window2)
     st_label2 = tkinter.Label(frame2, text='vvedite slovo i perevod')
-    button_exit2 = tkinter.Button(frame2, text='Exit', command=quit)
+    pole_vvoda_key = tkinter.Entry(frame2)
+    pole_vvoda_value = tkinter.Entry(frame2)
+
+    def add_value():
+        slovo, perevod = pole_vvoda_key.get(), pole_vvoda_value.get()
+        print(slovo,perevod)
+        added = CsvDict()
+        added.addi(slovo,perevod)
+
+    button_add = tkinter.Button(frame2, text='Add', command=add_value)
+    button_exit2 = tkinter.Button(frame2, text='Return', command=window2.destroy)
     st_label2.pack()
     frame2.pack()
+    pole_vvoda_key.pack()
+    pole_vvoda_value.pack()
+    button_add.pack()
     button_exit2.pack()
+
+
 
 def quit():
     from sys import exit
