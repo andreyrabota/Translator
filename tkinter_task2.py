@@ -13,12 +13,22 @@ class CsvDict:
             return datadict
 
     def addi(self, slovo, perevod):
-        with open('data_en2ru.csv', 'a', newline='') as file:
-            writer = csv.writer(file)
+        with open('data_en2ru.csv') as file:
+            datadict1 = {}
+            reader = csv.reader(file)
+            for row in reader:
+                k, v = row
+                datadict1[k] = v
             try:
-                writer.writerow([slovo, perevod])
+                if slovo not in datadict1:
+                    with open('data_en2ru.csv', 'a', newline='') as file_wr:
+                        writer = csv.writer(file_wr)
+                        writer.writerow([slovo, perevod])
+
+                else:
+                    print('yje est')
             except ValueError:
-                print('Vi ne ykazali dannie')
+                print('chtoto poshlo ne tak')
 
 raw_data = CsvDict()
 datadict = raw_data.read()
@@ -31,7 +41,7 @@ def random_key(datadict):
 
 ######################################################
 def click_button_check():
-    if pole_vvoda.get() == datadict[rand_slovo.get()].lower():
+    if pole_vvoda.get().casefold() == datadict[rand_slovo.get()].casefold():
         data.set('pravilno')
         pole_vvoda.delete(0, 'end')
         rand_slovo.set(random_key(datadict))
@@ -50,12 +60,15 @@ def admin_window():
     st_label2 = tkinter.Label(frame2, text='vvedite slovo i perevod')
     pole_vvoda_key = tkinter.Entry(frame2)
     pole_vvoda_value = tkinter.Entry(frame2)
+    var_label2 = tkinter.Label(frame2, text = 'varvar')
 
     def add_value():
         slovo, perevod = pole_vvoda_key.get(), pole_vvoda_value.get()
         print(slovo,perevod)
         added = CsvDict()
         added.addi(slovo,perevod)
+        pole_vvoda_key.delete(0, 'end')
+        pole_vvoda_value.delete(0, 'end')
 
     button_add = tkinter.Button(frame2, text='Add', command=add_value)
     button_exit2 = tkinter.Button(frame2, text='Return', command=window2.destroy)
@@ -63,6 +76,7 @@ def admin_window():
     frame2.pack()
     pole_vvoda_key.pack()
     pole_vvoda_value.pack()
+    var_label2.pack()
     button_add.pack()
     button_exit2.pack()
 
