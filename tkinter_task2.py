@@ -13,27 +13,31 @@ class CsvDict:
             return datadict
 
     def addi(self, slovo, perevod):
-        with open('data_en2ru.csv') as file:
-            datadict1 = {}
-            reader = csv.reader(file)
-            for row in reader:
-                k, v = row
-                datadict1[k] = v
-            try:
-                if slovo not in datadict1:
-                    with open('data_en2ru.csv', 'a', newline='') as file_wr:
-                        writer = csv.writer(file_wr)
-                        writer.writerow([slovo, perevod])
-
-                else:
-                    print('yje est')
-            except ValueError:
-                print('chtoto poshlo ne tak')
+        datadict1 = CsvDict.read(self)
+        try:
+            if slovo not in datadict1 and slovo != '' and perevod != '':
+                with open('data_en2ru.csv', 'a', newline='') as file_wr:
+                    writer = csv.writer(file_wr)
+                    writer.writerow([slovo, perevod])
+            else:
+                print('yje est')
+        except ValueError:
+            print('chtoto poshlo ne tak')
+    def dele(self):
+        data1 = CsvDict.read(self)
+        a = input()
+        if a in data1:
+            del data1[a]
+            with open('data_en2ru.csv', 'w', newline='') as file_saved:
+                writer = csv.writer(file_saved)
+                for key, value in data1.items():
+                    writer.writerow([key,value])
+        else:
+            print('dannoi zapisi ne obnarujeno')
 
 raw_data = CsvDict()
 datadict = raw_data.read()
-# {'Wolf': 'Волк', 'Bear': 'Медведь', 'Snowman': 'Снеговик', 'Cop': 'Полицейский', 'Cat': 'Кошка'}
-###
+
 def random_key(datadict):
     import random
     return random.choice(list(datadict.keys()))
@@ -50,6 +54,7 @@ def click_button_check():
 
 def admin_btn_click():
     admin_window()
+    main_window.withdraw()
 
 
 
@@ -60,18 +65,24 @@ def admin_window():
     st_label2 = tkinter.Label(frame2, text='vvedite slovo i perevod')
     pole_vvoda_key = tkinter.Entry(frame2)
     pole_vvoda_value = tkinter.Entry(frame2)
-    var_label2 = tkinter.Label(frame2, text = 'varvar')
+    alert_event = tkinter.StringVar()
+    var_label2 = tkinter.Label(frame2, textvariable = alert_event)
+    
+    def button_exit2_click():
+        main_window.deiconify()
+        window2.destroy()
+
 
     def add_value():
         slovo, perevod = pole_vvoda_key.get(), pole_vvoda_value.get()
-        print(slovo,perevod)
         added = CsvDict()
         added.addi(slovo,perevod)
         pole_vvoda_key.delete(0, 'end')
         pole_vvoda_value.delete(0, 'end')
+        alert_event.set('{0} i {1} dobavleni'.format(slovo, perevod))
 
     button_add = tkinter.Button(frame2, text='Add', command=add_value)
-    button_exit2 = tkinter.Button(frame2, text='Return', command=window2.destroy)
+    button_exit2 = tkinter.Button(frame2, text='Return', command=button_exit2_click)
     st_label2.pack()
     frame2.pack()
     pole_vvoda_key.pack()
