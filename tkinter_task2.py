@@ -3,7 +3,7 @@ import tkinter, csv, re, random
 
 class CsvDict:
     def read(self):
-        with open('data_en2ru.csv') as file:
+        with open('data_en2ru.csv', encoding='utf-8') as file:
             datadict1 = {}
             reader = csv.reader(file)
             for row in reader:
@@ -15,21 +15,18 @@ class CsvDict:
         return len(CsvDict.read(self))
 
     def addi(self, slovo, perevod):
-        datadict1 = CsvDict.read(self)
-        try:
-            with open('data_en2ru.csv', 'a', newline='') as file_wr:
-                writer = csv.writer(file_wr)
-                writer.writerow([slovo, perevod])
-        except ValueError:
-            print('chtoto poshlo ne tak')
+        with open('data_en2ru.csv', 'a', newline='', encoding='utf-8') as file_wr:
+            writer = csv.writer(file_wr)
+            writer.writerow([slovo, perevod])
 
     def dele(self, a):
         data1 = CsvDict.read(self)
         del data1[a]
-        with open('data_en2ru.csv', 'w', newline='') as file_saved:
+        with open('data_en2ru.csv', 'w', newline='', encoding='utf-8') as file_saved:
             writer = csv.writer(file_saved)
             for key, value in data1.items():
                 writer.writerow([key,value])
+
 
 raw_data = CsvDict()
 datadict = raw_data.read()
@@ -42,7 +39,7 @@ def random_key(datadict):
 
 
 def validate(slovo):
-    p = re.compile('(^[^A-Za-zА-Яа-яЁё])|([^A-Za-zА-Яа-яЁё~\-\'])')
+    p = re.compile('(^[^A-Za-zА-Яа-яЁёÀ-ú])|([^A-Za-zА-Яа-яЁёÀ-ú~\-\'])')
     if p.search(slovo) is not None:
         return False
     elif len(slovo) < 2 or len(slovo) > 20:
@@ -65,9 +62,16 @@ def admin_btn_click():
     main_window.withdraw()
 
 
-def admin_window():
 
+def admin_window():
     window2 = tkinter.Toplevel(main_window)
+    window2.title('Управление словарем')
+
+    def on_closing():
+        main_window.deiconify()
+        window2.destroy()
+
+    window2.protocol("WM_DELETE_WINDOW", on_closing)
     frame2 = tkinter.Frame(window2)
     st_label2 = tkinter.Label(frame2, text='Введите слово и перевод:')
     pole_vvoda_key = tkinter.Entry(frame2)
@@ -114,8 +118,8 @@ def admin_window():
     button_exit2 = tkinter.Button(frame2, text='Вернуться', command=button_exit2_click)
     st_label2.pack()
     frame2.pack()
-    pole_vvoda_key.pack()
-    pole_vvoda_value.pack()
+    pole_vvoda_key.pack(side='left')
+    pole_vvoda_value.pack(side='right')
     var_label2.pack()
     lab_quant.pack()
     button_add.pack()
@@ -123,12 +127,10 @@ def admin_window():
     button_exit2.pack()
 
 
-def quit():
-    from sys import exit
-    exit()
-
 
 main_window = tkinter.Tk()
+main_window.title('Словарь-проверка')
+main_window.geometry('200x180')
 frame = tkinter.Frame(main_window)
 rand_slovo = tkinter.StringVar()
 rand_slovo.set(random_key(datadict))
